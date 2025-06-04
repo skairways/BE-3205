@@ -2,13 +2,15 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './url/url.module';
+import { UrlModule } from './url/url.module';
 import { ConfigModule } from '@nestjs/config';
+import { ClickModule } from './click/click.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    UsersModule,
+    UrlModule,
+    ClickModule,
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'postgres',
       host: process.env.PG_HOST,

@@ -7,15 +7,20 @@ import {
   NotFoundException,
   Redirect,
   Delete,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 
 import { UrlService } from './url.service';
 import { Url } from './url.entity';
 import { UrlDto } from './url.dto';
-
+import { ClickService } from 'src/click/click.service';
 @Controller()
 export class UrlController {
-  constructor(private readonly urlService: UrlService) {}
+  constructor(
+    private readonly urlService: UrlService,
+    private readonly clickService: ClickService,
+  ) {}
 
   @Post('shorten')
   async shorten(@Body() urlDto: UrlDto): Promise<Url> {
@@ -27,12 +32,15 @@ export class UrlController {
 
   @Get(':shortUrl')
   @Redirect()
-  async redirect(@Param('shortUrl') shortUrl: string) {
+  async redirect(@Param('shortUrl') shortUrl: string, @Req() req: Request) {
     const originalUrl = await this.urlService.redirectToOriginalUrl(shortUrl);
+    const urlEntity = await this.urlService.findByShortUrl(shortUrl);
 
     if (!originalUrl) {
       throw new NotFoundException('Short URL not found');
     }
+
+    await this.clickService.recordClick(urlEntity, req.ip);
 
     return { url: originalUrl };
   }

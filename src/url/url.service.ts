@@ -68,6 +68,13 @@ export class UrlService {
     return url.originalUrl;
   }
 
+  async findByShortUrl(shortUrl: string): Promise<Url | null> {
+    return this.urlRepository.findOne({
+      where: { shortUrl },
+      relations: ['clicks'],
+    });
+  }
+
   async deleteUrl(shortUrl: string): Promise<void> {
     const url = await this.urlRepository.findOne({ where: { shortUrl } });
 

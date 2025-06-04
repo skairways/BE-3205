@@ -3,7 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Click } from '../click/click.entity';
 
 @Entity('url')
 export class Url {
@@ -27,4 +29,7 @@ export class Url {
 
   @Column({ default: 0 })
   clickCount: number;
+
+  @OneToMany(() => Click, (click) => click.url)
+  clicks: Click[];
 }
